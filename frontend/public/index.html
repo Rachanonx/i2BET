@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i2BET</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/ChatGPT_Image.png">
+</head>
+<body>
+    <!-- Each screen is a full-page overlay -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-form" id="login-form" style="display: block;">
+                <h2>Login</h2>
+                <input type="text" id="login-userid" placeholder="User ID" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button id="login-btn">Login</button>
+                <p>No account? <a href="#" id="show-register">Register here</a></p>
+            </div>
+            <div class="auth-form" id="register-form" style="display: none;">
+                <h2>Register</h2>
+                <input type="text" id="register-userid" placeholder="User ID" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <input type="password" id="register-confirm-password" placeholder="Confirm Password" required>
+                <button id="register-btn">Register</button>
+                <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </div>
+            <p id="auth-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <div id="betting-screen" class="screen">
+        <div class="betting-container">
+             <header class="betting-header">
+                <button id="loan-btn">Get Loan (5000)</button>
+                <div class="header-actions">
+                    <button id="history-btn-betting">History</button>
+                    <button id="logout-btn-betting">Logout</button>
+                </div>
+            </header>
+            <h1>Place Your Bet</h1>
+            <div class="bet-display">
+                <div class="bet-area" data-bet-type="pair">
+                    <span>PAIR BET</span>
+                    <p id="pair-bet-amount">0</p>
+                </div>
+                <div class="bet-area main selected" data-bet-type="main">
+                    <span>MAIN BET</span>
+                    <p id="main-bet-amount">0</p>
+                </div>
+                <div class="bet-area" data-bet-type="twentyone">
+                    <span>21+3 BET</span>
+                    <p id="twentyone-bet-amount">0</p>
+                </div>
+            </div>
+            <div class="chip-rack">
+                 <button class="chip" data-value="100">100</button>
+                <button class="chip" data-value="500">500</button>
+                <button class="chip" data-value="1000">1K</button>
+                <button class="chip" data-value="5000">5K</button>
+                <button class="chip" data-value="10000">10K</button>
+            </div>
+            <div class="bet-actions">
+                <button id="undo-btn">Undo</button>
+                <button id="clear-bet-btn">Clear</button>
+                <button id="deal-btn" disabled>Deal</button>
+            </div>
+             <div class="user-info-betting">
+                Player: <span id="player-id-betting"></span> | Balance: <span id="player-balance-betting">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-table" class="screen">
+        <div class="game-table-container">
+            <header class="game-header">
+                <div class="header-user-info">
+                    Player: <span id="player-id-game"></span> | Balance: <span id="player-balance-game">0</span>
+                </div>
+                <div>
+                    <button id="history-btn">History</button>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </header>
+            <div class="table">
+                <div class="dealer-area">
+                    <h3>Dealer's Hand: <span id="dealer-score"></span></h3>
+                    <div id="dealer-cards" class="cards-container"></div>
+                </div>
+                
+                <div class="game-info">
+                    <div id="side-bet-result"></div>
+                    <p id="game-result"></p>
+                    <div id="insurance-prompt" class="insurance-prompt" style="display: none;">
+                        <p>Dealer has an Ace. Insurance?</p>
+                        <div class="insurance-actions">
+                            <button id="insurance-yes-btn">Yes</button>
+                            <button id="insurance-no-btn">No</button>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="player-area">
+                    <h3>Your Hand(s)</h3>
+                    <div id="player-hands-container">
+                        <!-- Player hands will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            <footer class="game-controls">
+                <div class="current-bet-display">
+                    Main: <span id="current-main-bet">0</span> |
+                    Pair: <span id="current-pair-bet">0</span> |
+                    21+3: <span id="current-21plus3-bet">0</span>
+                </div>
+                <div id="player-actions" class="player-actions">
+                    <button id="hit-btn">Hit</button>
+                    <button id="stand-btn">Stand</button>
+                    <button id="double-down-btn">Double</button>
+                    <button id="split-btn">Split</button>
+                </div>
+                <div class="ai-controls">
+                    <button id="ai-suggestion-btn">Get AI Suggestion</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content large">
+            <span class="close-btn" id="close-history-modal">&times;</span>
+            <h2>Game History</h2>
+            <div id="history-content"></div>
+            <div class="modal-actions">
+                <button id="analyze-history-btn">Analyze with AI</button>
+                <button id="delete-history-btn" class="danger">Delete All History</button>
+            </div>
+            <div id="ai-analysis-result" class="ai-result"></div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3>Are you sure?</h3>
+            <p>This will permanently delete your entire game history. This action cannot be undone.</p>
+     <p>After deleting, your balance will be reset to 10000.</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="danger">Yes, Delete</button>
+                <button id="cancel-delete-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="custom-alert-title">Notification</h3>
+            <p id="custom-alert-message"></p>
+            <div class="modal-actions">
+                <button id="custom-alert-close-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
